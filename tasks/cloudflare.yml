@@ -1,0 +1,21 @@
+---
+- name: Install certbot cloudflare package.
+  ansible.builtin.package:
+    name: '{{ certbot_cloudflare_package }}'
+    state: present
+
+- name: Ensure cloudflare configuration directory exists.
+  ansible.builtin.file:
+    dest: '{{ certbot_cloudflare_config_dir }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: Configure cloudflare.
+  ansible.builtin.template:
+    dest: '{{ certbot_cloudflare_config_dir }}/cloudflare.ini'
+    src: cloudflare.ini.j2
+    owner: root
+    group: root
+    mode: '0600'

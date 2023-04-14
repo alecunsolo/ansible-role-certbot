@@ -65,3 +65,7 @@
 - name: Ensure certbot timer is enabled.
   ansible.builtin.assert:
     that: certbot_timer_cmd.stdout == "enabled"
+
+- name: Configure cloudflare
+  ansible.builtin.import_tasks: cloudflare.yml
+  when: certbot_cloudflare_enabled

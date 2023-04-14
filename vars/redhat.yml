@@ -1,3 +1,4 @@
 ---
 certbot_package: certbot
+certbot_cloudflare_package: python3-certbot-dns-cloudflare
 certbot_renew_timer: certbot-renew.timer

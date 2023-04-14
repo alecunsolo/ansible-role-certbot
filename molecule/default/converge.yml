@@ -3,6 +3,7 @@
   hosts: all
   vars:
     certbot_mail: certbotmail@example.com
+    certbot_cloudflare_token: supersecrettoken
   pre_tasks:
     - name: Update apt cache.
       ansible.builtin.apt:

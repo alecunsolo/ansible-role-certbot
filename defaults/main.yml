@@ -7,3 +7,6 @@ certbot_curve: secp384r1
 certbot_hooks: []
 # - name: restart-nginx.sh
 #   type: deploy
+
+certbot_cloudflare_enabled: true
+certbot_cloudflare_config_dir: /root/.secrets
