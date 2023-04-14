@@ -1,0 +1,3 @@
+---
+certbot_package: certbot
+certbot_renew_timer: certbot.timer

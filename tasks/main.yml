@@ -1,2 +1,67 @@
 ---
-# tasks file for certbot
+- name: Read distro specific variables.
+  ansible.builtin.include_vars: '{{ ansible_os_family | lower }}.yml'
+
+- name: Install certbot.
+  ansible.builtin.package:
+    name: '{{ certbot_package }}'
+    state: present
+
+- name: Make sure config directory exists.
+  ansible.builtin.file:
+    dest: /etc/letsencrypt
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Configure certbot.
+  ansible.builtin.template:
+    dest: /etc/letsencrypt/cli.ini
+    src: '{{ certbot_config_file }}'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Ensure hook dirs exist.
+  ansible.builtin.file:
+    dest: /etc/letsencrypt/renewal-hooks/{{ item }}
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+  loop:
+    - deploy
+    - post
+    - pre
+
+- name: Configure renewal hooks.
+  ansible.builtin.template:
+    dest: /etc/letsencrypt/renewal-hooks/{{ item.type }}/{{ item.name }}
+    src: certbot/{{ item.name }}.j2
+    owner: root
+    group: root
+    mode: '0754'
+  loop: '{{ certbot_hooks }}'
+
+- name: Ensure renewal timer is running.
+  ansible.builtin.systemd:
+    name: '{{ certbot_renew_timer }}'
+    state: started
+    enabled: true
+
+# Self validation
+- name: Execute test command.
+  ansible.builtin.command:
+    cmd: certbot --version
+  changed_when: false
+
+- name: Execute timer validation command.
+  ansible.builtin.command:  # noqa command-instead-of-module
+    cmd: systemctl is-enabled {{ certbot_renew_timer }}
+  register: certbot_timer_cmd
+  changed_when: false
+
+- name: Ensure certbot timer is enabled.
+  ansible.builtin.assert:
+    that: certbot_timer_cmd.stdout == "enabled"

@@ -1,2 +1,9 @@
 ---
 # defaults file for certbot
+certbot_config_file: cli.ini.j2
+certbot_keytype: ecdsa
+certbot_curve: secp384r1
+
+certbot_hooks: []
+# - name: restart-nginx.sh
+#   type: deploy

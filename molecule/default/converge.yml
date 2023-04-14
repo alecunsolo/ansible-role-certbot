@@ -1,6 +1,19 @@
 ---
 - name: Converge
   hosts: all
+  vars:
+    certbot_mail: certbotmail@example.com
+  pre_tasks:
+    - name: Update apt cache.
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+      when: ansible_os_family | lower == 'debian'
+    - name: Ensure epel repository is installed
+      ansible.builtin.dnf:
+        name: epel-release
+        state: present
+      when: ansible_os_family | lower == 'redhat'
   tasks:
     - name: Include certbot.
       ansible.builtin.include_role:
