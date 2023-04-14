@@ -4,31 +4,76 @@
 Ansible Role: certbot
 =========
 
-A brief description of the role goes here.
+A minimal role to install certbot and cloudflare DNS plugin.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+In RHEL distribution the needed packages are in the `epel` repository.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+```yaml
+certbot_config_file: cli.ini.j2
+```
+Default template file used for the global certbot configuration: can be overwritten if needed.
+```yaml
+certbot_keytype: ecdsa
+certbot_curve: secp384r1
+certbot_mail: TBD
+```
+Configuration values used in the default configuration files.
+```yaml
+certbot_hooks: []
+# - name: restart-nginx.sh
+#   type: deploy
+```
+List of template files containing renewal hooks. The type is one of: `deploy`, `pre`, `post`.
+```yaml
+certbot_cloudflare_enabled: true
+```
+Whether to instal and configure the cloudflare plugin
+```yaml
+certbot_cloudflare_config_dir: /root/.secrets
+```
+The parent direcotry for the cloudflare plugin configuration file. The filename is `cloudflare.ini`
+```yaml
+certbot_cloudflare_token: TBD
+```
+The Cloudflare token used in the DNS challenge.
+
+Distro specific variables:
+```yaml
+# Debian
+certbot_package: certbot
+certbot_cloudflare_package: python3-certbot-dns-cloudflare
+certbot_renew_timer: certbot.timer
+# RHEL
+certbot_package: certbot
+certbot_cloudflare_package: python3-certbot-dns-cloudflare
+certbot_renew_timer: certbot-renew.timer
+```
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```yaml
+- name: Converge
+  hosts: all
+  vars:
+    certbot_mail: certbotmail@example.com
+    certbot_cloudflare_token: supersecrettoken
+  tasks:
+    - name: Include certbot.
+      ansible.builtin.include_role:
+        name: alecunsolo.certbot
+```
 
 License
 -------
