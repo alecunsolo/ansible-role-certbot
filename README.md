@@ -4,6 +4,10 @@
 Ansible Role: certbot
 =========
 
+## DISCLAIMER
+After [this](https://www.redhat.com/en/blog/furthering-evolution-centos-stream) announcement I will not test on RHEL anymore.
+
+------
 A minimal role to install certbot and cloudflare DNS plugin.
 
 Requirements
